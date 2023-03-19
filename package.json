@@ -1,12 +1,21 @@
 {
   "name": "scg-account",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "description": "개쩌는 SSO 구현 전용 SCG 맞춤 OpenID Connect 구현체?",
+  "private": true,
+  "keywords": [
+    "auth",
+    "oauth",
+    "openid-connect",
+    "security"
+  ],
+  "author": "lhwdev",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.55.0",
+    "@typescript-eslint/parser": "^5.55.0",
+    "eslint": "^7.32.0",
+    "prettier": "^2.8.4",
+    "typescript": "^5.0.2"
+  }
 }
