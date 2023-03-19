@@ -1,0 +1,8 @@
+{
+  "name": "@scg-account/backend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@trpc/server": "^10.16.0"
+  }
+}

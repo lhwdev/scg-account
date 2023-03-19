@@ -7,46 +7,55 @@ importers:
       '@typescript-eslint/eslint-plugin': ^5.55.0
       '@typescript-eslint/parser': ^5.55.0
       eslint: ^7.32.0
+      eslint-config-next: ^13.2.4
+      eslint-config-prettier: ^8.7.0
       prettier: ^2.8.4
       typescript: ^5.0.2
     devDependencies:
       '@typescript-eslint/eslint-plugin': 5.55.0_5u64safighfynn37kfh5wya3wu
       '@typescript-eslint/parser': 5.55.0_jeuwjvsopuo23ctsjsevxmvjsi
       eslint: 7.32.0
+      eslint-config-next: 13.2.4_jeuwjvsopuo23ctsjsevxmvjsi
+      eslint-config-prettier: 8.7.0_eslint@7.32.0
       prettier: 2.8.4
       typescript: 5.0.2
+
+  packages/backend:
+    specifiers:
+      '@trpc/server': ^10.16.0
+    dependencies:
+      '@trpc/server': 10.16.0
 
   packages/common:
     specifiers: {}
 
   packages/frontend:
     specifiers:
+      '@scg-account/backend': workspace:*
+      '@tanstack/react-query': ^4.27.0
+      '@trpc/client': ^10.16.0
+      '@trpc/next': ^10.16.0
+      '@trpc/react-query': ^10.16.0
+      '@trpc/server': ^10.16.0
       '@types/node': ^18.15.3
       '@types/react': ^18.0.28
       '@types/react-dom': ^18.0.11
-      '@typescript-eslint/parser': ^5.55.0
-      eslint: ^7.32.0
-      eslint-config-next: ^13.2.4
-      eslint-config-prettier: ^8.7.0
       next: ^13.2.4
-      prettier: ^2.8.4
       react: ^18.2.0
       react-dom: ^18.2.0
-      typescript: ^5.0.2
     dependencies:
+      '@scg-account/backend': link:../backend
+      '@tanstack/react-query': 4.27.0_biqbaboplfbrettd7655fr4n2y
+      '@trpc/client': 10.16.0_@trpc+server@10.16.0
+      '@trpc/next': 10.16.0_ce5lki43zjayzugu2gngg3k6ga
+      '@trpc/react-query': 10.16.0_xqgqjjeu4juncpfqrbxjw3t7rq
+      '@trpc/server': 10.16.0
       '@types/node': 18.15.3
       '@types/react': 18.0.28
       '@types/react-dom': 18.0.11
       next: 13.2.4_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-    devDependencies:
-      '@typescript-eslint/parser': 5.55.0_jeuwjvsopuo23ctsjsevxmvjsi
-      eslint: 7.32.0
-      eslint-config-next: 13.2.4_jeuwjvsopuo23ctsjsevxmvjsi
-      eslint-config-prettier: 8.7.0_eslint@7.32.0
-      prettier: 2.8.4
-      typescript: 5.0.2
 
 packages:
 
@@ -292,6 +301,77 @@ packages:
     resolution: {integrity: sha512-4C7nX/dvpzB7za4Ql9K81xK3HPxCpHMgwTZVyf+9JQ6VUbn9jjZVN7/Nkdz/Ugzs2CSjqnL/UPXroiVBVHUWUw==}
     dependencies:
       tslib: 2.5.0
+    dev: false
+
+  /@tanstack/query-core/4.27.0:
+    resolution: {integrity: sha512-sm+QncWaPmM73IPwFlmWSKPqjdTXZeFf/7aEmWh00z7yl2FjqophPt0dE1EHW9P1giMC5rMviv7OUbSDmWzXXA==}
+    dev: false
+
+  /@tanstack/react-query/4.27.0_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-9S49LTFenWbxVHx0iR6qUXP+MKL5kwz/mV9pzfNXvdIM1R0vT+hiecCCL+ox/tD2glAQ51JHHMffQaRuH7wYRA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      '@tanstack/query-core': 4.27.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      use-sync-external-store: 1.2.0_react@18.2.0
+    dev: false
+
+  /@trpc/client/10.16.0_@trpc+server@10.16.0:
+    resolution: {integrity: sha512-Hxxi3mOcUyszosj6xpPDIIBV1TOhXKpZ191BW/60r1lXBAfNrDUWHOTol1Dfu+hpcx4bpj3WRyob5cf+6KeCDA==}
+    peerDependencies:
+      '@trpc/server': 10.16.0
+    dependencies:
+      '@trpc/server': 10.16.0
+    dev: false
+
+  /@trpc/next/10.16.0_ce5lki43zjayzugu2gngg3k6ga:
+    resolution: {integrity: sha512-2AohDydvvLk2IjnQ1hTnT8cVmLItYf6cFRwJVYnyi35y2DVKXLiIWuKSTzc9xzR5enYFUQJZivXaWx/i0jjcfQ==}
+    peerDependencies:
+      '@tanstack/react-query': ^4.18.0
+      '@trpc/client': 10.16.0
+      '@trpc/react-query': 10.16.0
+      '@trpc/server': 10.16.0
+      next: '*'
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      '@tanstack/react-query': 4.27.0_biqbaboplfbrettd7655fr4n2y
+      '@trpc/client': 10.16.0_@trpc+server@10.16.0
+      '@trpc/react-query': 10.16.0_xqgqjjeu4juncpfqrbxjw3t7rq
+      '@trpc/server': 10.16.0
+      next: 13.2.4_biqbaboplfbrettd7655fr4n2y
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-ssr-prepass: 1.5.0_react@18.2.0
+    dev: false
+
+  /@trpc/react-query/10.16.0_xqgqjjeu4juncpfqrbxjw3t7rq:
+    resolution: {integrity: sha512-LHLkyYgmmmaqMK33Hil7+DxCRG+8cRl2hF/rY8DQneh7e/u4cBA/wbun5vs8BAJxmYcHsQNPlq5aBy80CyU78g==}
+    peerDependencies:
+      '@tanstack/react-query': ^4.18.0
+      '@trpc/client': 10.16.0
+      '@trpc/server': 10.16.0
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      '@tanstack/react-query': 4.27.0_biqbaboplfbrettd7655fr4n2y
+      '@trpc/client': 10.16.0_@trpc+server@10.16.0
+      '@trpc/server': 10.16.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
+
+  /@trpc/server/10.16.0:
+    resolution: {integrity: sha512-lCUq7AB7vcgrNbaN+xP/AN62OjKDgrRyG7fTDPv5K633ut7KJ3m57qs60VRBOgp9vow6elAg51pKFFDtPHbTRA==}
     dev: false
 
   /@types/json-schema/7.0.11:
@@ -2008,6 +2088,14 @@ packages:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
     dev: true
 
+  /react-ssr-prepass/1.5.0_react@18.2.0:
+    resolution: {integrity: sha512-yFNHrlVEReVYKsLI5lF05tZoHveA5pGzjFbFJY/3pOqqjGOmMmqx83N4hIjN2n6E1AOa+eQEUxs3CgRnPmT0RQ==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
+
   /react/18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
     engines: {node: '>=0.10.0'}
@@ -2369,6 +2457,14 @@ packages:
     dependencies:
       punycode: 2.3.0
     dev: true
+
+  /use-sync-external-store/1.2.0_react@18.2.0:
+    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /v8-compile-cache/2.3.0:
     resolution: {integrity: sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==}
