@@ -1,9 +1,0 @@
-{
-  "name": "utils-frontend",
-  "version": "1.0.0",
-  "private": true,
-  "main": "src/index.js",
-  "dependencies": {
-    "@utils/api": "workspace:*"
-  }
-}
