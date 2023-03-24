@@ -34,7 +34,7 @@ type Alpha = LowercaseAlpha | UppercaseAlpha;
 // pct-encoded := % hex hex
 // sub-delim := "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
 
-type PathSegmentChar =
+export type PathSegmentChar =
   | Alpha
   | "-"
   | "."
@@ -64,7 +64,7 @@ type StringToChars<T extends string> = string extends T
   ? [C0, ...StringToChars<R>]
   : [];
 
-type RouteTypeForSegment<
+export type RouteTypeForSegment<
   Segment extends string,
   T,
   Allowed = never,

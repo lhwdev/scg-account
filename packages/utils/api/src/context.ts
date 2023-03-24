@@ -3,12 +3,6 @@ import { Json } from "./index";
 export class ApiContext {}
 
 export interface RequestContext extends ApiContext {
-  status: number;
-  statusText: string;
-  ok: boolean;
-}
-
-export interface ResponseContext extends ApiContext {
   pathParams: Record<string, string>;
   queryParams: Record<string, string>;
 
@@ -17,8 +11,21 @@ export interface ResponseContext extends ApiContext {
   body: RawBody;
 }
 
+export interface ResponseContext extends ApiContext {
+  readonly pathParams: Record<string, string>;
+  readonly queryParams: Record<string, string>;
+
+  readonly headers: Headers;
+
+  readonly body: RawBody;
+}
+
 interface Headers extends Iterable<[Lowercase<string>, string]> {
   get(name: string): string;
+}
+
+interface MutableHeaders extends Headers {
+  set(name: string, value: string): void;
 }
 
 interface RawBody {

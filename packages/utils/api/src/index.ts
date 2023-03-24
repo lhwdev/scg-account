@@ -1,5 +1,11 @@
 import { RequestContext, ResponseContext } from "./context";
 
+export const inputHandlerSymbol = Symbol("inputHandler");
+
+export type InputConstructor<T> =
+  | { [inputHandlerSymbol]: InputHandler<T> }
+  | InputHandler<T>;
+
 export interface RouteInterface<Input = {}> {
   name: string;
   input: Input;
@@ -23,7 +29,7 @@ export class Routes<T extends RoutesRecord, Input = {}> extends Route<Input> {
 
 export type EntityActions<Input> = Record<
   string,
-  Action<ActionParameterHandler[], ActionResultHandler, Input>
+  Action<ActionResultHandler, Input>
 >;
 
 export class Entity<
@@ -38,7 +44,6 @@ export class Entity<
 }
 
 export class Action<
-  Params extends ActionParameterHandler[] = ActionParameterHandler[],
   Result extends ActionResultHandler = ActionResultHandler,
   Input = {},
 > implements RouteInterface<Input>
@@ -46,7 +51,6 @@ export class Action<
   constructor(
     public name: string,
     public input: Input,
-    public params: Params,
     public result: Result,
   ) {}
 }
@@ -57,30 +61,30 @@ export class ActionRoute<A extends Action, Input = {}> extends Route<Input> {
   }
 }
 
-export interface ActionParameterHandler<
+export interface InputHandler<
+  T = unknown,
   Req extends RequestContext = RequestContext,
   Res extends ResponseContext = ResponseContext,
-  T = unknown,
 > {
-  serialize(context: Req, data: T): Promise<void>;
-  deserialize(context: Res): Promise<T>;
+  serialize(context: Req, data: T): Promise<void> | void;
+  deserialize(context: Res): Promise<T> | T;
 }
 
 export interface ActionResultHandler<
+  T = unknown,
   Res extends ResponseContext = ResponseContext,
   Req extends RequestContext = RequestContext,
-  T = unknown,
 > {
-  serialize(context: Res, data: T): Promise<void>;
-  deserialize(context: Req): Promise<T>;
+  serialize(context: Res, data: T): Promise<void> | void;
+  deserialize(context: Req): Promise<T> | T;
 }
 
-export const SerializerSymbol = Symbol("serializerOf");
+export const serializerSymbol = Symbol("serializerOf");
 
 export type Serializable = BasicTypes | SerializableObject;
 
 export interface SerializableObject {
-  [SerializerSymbol]: Serializer<this>;
+  [serializerSymbol]: Serializer<this>;
 }
 
 export interface Serializer<T> {
