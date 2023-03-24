@@ -17,7 +17,7 @@ export interface ResponseContext extends ApiContext {
   body: RawBody;
 }
 
-interface Headers extends Iterable<[string, string]> {
+interface Headers extends Iterable<[Lowercase<string>, string]> {
   get(name: string): string;
 }
 
