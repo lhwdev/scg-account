@@ -12,12 +12,12 @@
   "author": "lhwdev",
   "license": "UNLICENSED",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.55.0",
-    "@typescript-eslint/parser": "^5.55.0",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
     "eslint": "^7.32.0",
     "eslint-config-next": "^13.2.4",
-    "eslint-config-prettier": "^8.7.0",
-    "prettier": "^2.8.4",
+    "eslint-config-prettier": "^8.8.0",
+    "prettier": "^2.8.7",
     "typescript": "^5.0.2"
   }
 }

@@ -52,6 +52,8 @@ type PathSegmentChar =
   | ","
   | ";"
   | "=";
+
+// 복붙!
 type StringToChars<T extends string> = string extends T
   ? string[]
   : T extends `${infer C0}${infer C1}${infer C2}${infer C3}${infer C4}${infer C5}${infer R}`
@@ -62,25 +64,50 @@ type StringToChars<T extends string> = string extends T
   ? [C0, ...StringToChars<R>]
   : [];
 
-type PathSegment<T extends string> = StringToChars<T> extends PathSegmentChar[] ? void : never;
+// 복붙222!
+type Split<S extends string, D extends string> = string extends S
+  ? string[]
+  : S extends ""
+  ? []
+  : S extends `${infer T}${D}${infer U}`
+  ? [T, ...Split<U, D>]
+  : [S];
 
+type PathSegment<T extends string> = StringToChars<T> extends PathSegmentChar[]
+  ? void
+  : never;
 
-type Param<Segment extends string> = StringToChars<Segment> extends PathSegmentChar[] | [':', PathSegmentChar[]] ? (Segment extends `:${infer S}`
+type PathSegmentReturn<
+  Segment extends string,
+  R,
+> = StringToChars<Segment> extends
+  | PathSegmentChar[]
+  | [":", ...PathSegmentChar[]]
+  ? R
+  : never;
+
+type Param<Segment extends string> = Segment extends `:${infer S}`
   ? { [segment in S]: string }
-  : {}) : never;
+  : {};
 
-function get<const Path extends string>(_path: Path, _handler: (param: Param<Path>) => void) {
-  throw "TODO";
+interface RouteHandler<Segment extends string> {
+  get(handler: (param: Param<Segment>) => void): void;
 }
 
-get("user", param => {
-  param.nothingHere // param = {}
-})
+function route<const Path extends string>(
+  _path: Path,
+): PathSegmentReturn<Path, RouteHandler<Path>> {
+  throw "todo";
+}
 
-get(":user", param => {
-  param.user // param = { user: string; }
-})
+route("user").get(param => {
+  // param: {}
+  param.nothingHere; // Property 'nothingHere' does not exist...
+});
 
-get("invalid path segment", _param => { throw "TODO"; })
+route(":user").get(param => {
+  param.user;
+});
 
-
+// Property 'get' does not exist on type 'never'.
+route("illegal path").get(param => {});
