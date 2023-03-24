@@ -64,50 +64,46 @@ type StringToChars<T extends string> = string extends T
   ? [C0, ...StringToChars<R>]
   : [];
 
-// 복붙222!
-type Split<S extends string, D extends string> = string extends S
-  ? string[]
-  : S extends ""
-  ? []
-  : S extends `${infer T}${D}${infer U}`
-  ? [T, ...Split<U, D>]
-  : [S];
-
-type PathSegment<T extends string> = StringToChars<T> extends PathSegmentChar[]
-  ? void
-  : never;
-
-type PathSegmentReturn<
+type RouteTypeForSegment<
   Segment extends string,
-  R,
-> = StringToChars<Segment> extends
-  | PathSegmentChar[]
-  | [":", ...PathSegmentChar[]]
-  ? R
+  T,
+  Allowed = never,
+> = Segment extends Allowed
+  ? T
+  : StringToChars<Segment> extends PathSegmentChar[]
+  ? T
   : never;
+// type PathSegmentReturn<
+//   Segment extends string,
+//   R,
+// > = StringToChars<Segment> extends
+//   | PathSegmentChar[]
+//   | [":", ...PathSegmentChar[]]
+//   ? R
+//   : never;
 
-type Param<Segment extends string> = Segment extends `:${infer S}`
-  ? { [segment in S]: string }
-  : {};
+// type Param<Segment extends string> = Segment extends `:${infer S}`
+//   ? { [segment in S]: string }
+//   : {};
 
-interface RouteHandler<Segment extends string> {
-  get(handler: (param: Param<Segment>) => void): void;
-}
+// interface RouteHandler<Segment extends string> {
+//   get(handler: (param: Param<Segment>) => void): void;
+// }
 
-function route<const Path extends string>(
-  _path: Path,
-): PathSegmentReturn<Path, RouteHandler<Path>> {
-  throw "todo";
-}
+// function route<const Path extends string>(
+//   _path: Path,
+// ): PathSegmentReturn<Path, RouteHandler<Path>> {
+//   throw "todo";
+// }
 
-route("user").get(param => {
-  // param: {}
-  param.nothingHere; // Property 'nothingHere' does not exist...
-});
+// route("user").get(param => {
+//   // param: {}
+//   param.nothingHere; // Property 'nothingHere' does not exist...
+// });
 
-route(":user").get(param => {
-  param.user;
-});
+// route(":user").get(param => {
+//   param.user;
+// });
 
-// Property 'get' does not exist on type 'never'.
-route("illegal path").get(param => {});
+// // Property 'get' does not exist on type 'never'.
+// route("illegal path").get(param => {});
