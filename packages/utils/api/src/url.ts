@@ -29,23 +29,6 @@ type LowercaseAlpha =
   | "z";
 type UppercaseAlpha = Uppercase<LowercaseAlpha>;
 type Alpha = LowercaseAlpha | UppercaseAlpha;
-type Hex =
-  | "0"
-  | "1"
-  | "2"
-  | "3"
-  | "4"
-  | "5"
-  | "6"
-  | "7"
-  | "8"
-  | "9"
-  | "a"
-  | "b"
-  | "c"
-  | "d"
-  | "e"
-  | "f";
 
 // unreserved := alpha[a-zA-Z] / digit[0-9] / "-" / "." / "_" / "~"
 // pct-encoded := % hex hex
@@ -57,7 +40,7 @@ type PathSegmentChar =
   | "."
   | "_"
   | "~"
-  | `%${Hex}${Hex}`
+  // | `%${Hex}${Hex}` // allowed by spec, but I cannot afford
   | "!"
   | "$"
   | "&"
@@ -82,9 +65,9 @@ type StringToChars<T extends string> = string extends T
 type PathSegment<T extends string> = StringToChars<T> extends PathSegmentChar[] ? void : never;
 
 
-type Param<Segment extends string> = Segment extends `:${infer S}`
+type Param<Segment extends string> = StringToChars<Segment> extends PathSegmentChar[] | [':', PathSegmentChar[]] ? (Segment extends `:${infer S}`
   ? { [segment in S]: string }
-  : {};
+  : {}) : never;
 
 function get<const Path extends string>(_path: Path, _handler: (param: Param<Path>) => void) {
   throw "TODO";
