@@ -9,6 +9,14 @@
   ],
   "parser": "@typescript-eslint/parser",
   "rules": {
-    "no-unused-vars": "off"
+    "no-unused-vars": "off",
+    "@typescript-eslint/ban-types": [
+      "error",
+      {
+        "types": {
+          "{}": false
+        }
+      }
+    ]
   }
 }

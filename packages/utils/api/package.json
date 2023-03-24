@@ -1,0 +1,6 @@
+{
+  "name": "@scg-utils/api",
+  "main": "src/index.ts",
+  "author": "lhwdev",
+  "license": "MIT"
+}
