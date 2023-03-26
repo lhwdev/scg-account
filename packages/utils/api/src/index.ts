@@ -1,10 +1,23 @@
+import { Action } from "./api/Action";
 import { RequestContext, ResponseContext } from "./context";
+
+export * from "./api";
 
 export const inputHandlerSymbol = Symbol("inputHandler");
 
 export type InputConstructor<T> =
   | { [inputHandlerSymbol]: InputHandler<T> }
   | InputHandler<T>;
+
+export function inputHandlerOf<T>(
+  constructor: InputConstructor<T>,
+): InputHandler<T> {
+  if (inputHandlerSymbol in constructor) {
+    return constructor[inputHandlerSymbol];
+  } else {
+    return constructor;
+  }
+}
 
 export interface RouteInterface<Input = {}> {
   name: string;
@@ -32,42 +45,13 @@ export type EntityActions<Input> = Record<
   Action<ActionResultHandler, Input>
 >;
 
-export class Entity<
-  Actions extends EntityActions<Input>,
-  Input = {},
-> extends Route<Input> {
-  parent: Routes<RoutesRecord> | undefined;
-
-  constructor(name: string, input: Input, public actions: Actions) {
-    super(name, input);
-  }
-}
-
-export class Action<
-  Result extends ActionResultHandler = ActionResultHandler,
-  Input = {},
-> implements RouteInterface<Input>
-{
-  constructor(
-    public name: string,
-    public input: Input,
-    public result: Result,
-  ) {}
-}
-
-export class ActionRoute<A extends Action, Input = {}> extends Route<Input> {
-  constructor(public action: A, input: Input) {
-    super(action.name, input);
-  }
-}
-
 export interface InputHandler<
   T = unknown,
   Req extends RequestContext = RequestContext,
   Res extends ResponseContext = ResponseContext,
 > {
-  serialize(context: Req, data: T): Promise<void> | void;
-  deserialize(context: Res): Promise<T> | T;
+  serialize(context: Req, data: T): Promise<void>;
+  deserialize(context: Res): Promise<T>;
 }
 
 export interface ActionResultHandler<
@@ -75,34 +59,6 @@ export interface ActionResultHandler<
   Res extends ResponseContext = ResponseContext,
   Req extends RequestContext = RequestContext,
 > {
-  serialize(context: Res, data: T): Promise<void> | void;
-  deserialize(context: Req): Promise<T> | T;
+  serialize(context: Res, data: T): Promise<void>;
+  deserialize(context: Req): Promise<T>;
 }
-
-export const serializerSymbol = Symbol("serializerOf");
-
-export type Serializable = BasicTypes | SerializableObject;
-
-export interface SerializableObject {
-  [serializerSymbol]: Serializer<this>;
-}
-
-export interface Serializer<T> {
-  serialize(data: T): Json;
-  deserialize(rawData: Json): T;
-}
-
-export type BasicTypes = Nested<
-  | number
-  | string
-  | boolean
-  | bigint
-  | Date
-  | RegExp
-  | Map<unknown, unknown>
-  | Set<unknown>
->;
-
-export type Nested<T> = (T | Nested<T>)[] | { [key: string]: T | Nested<T> };
-
-export type Json = Nested<number | string | boolean>;

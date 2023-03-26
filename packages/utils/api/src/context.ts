@@ -1,4 +1,4 @@
-import { Json } from "./index";
+import { Json } from "./serialization";
 
 export class ApiContext {}
 
@@ -6,9 +6,9 @@ export interface RequestContext extends ApiContext {
   pathParams: Record<string, string>;
   queryParams: Record<string, string>;
 
-  headers: Headers;
+  headers: MutableHeaders;
 
-  body: RawBody;
+  body?: RawBody;
 }
 
 export interface ResponseContext extends ApiContext {
