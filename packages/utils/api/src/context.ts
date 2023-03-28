@@ -12,27 +12,43 @@ export interface RequestContext extends ApiContext {
 }
 
 export interface ResponseContext extends ApiContext {
-  readonly pathParams: Record<string, string>;
-  readonly queryParams: Record<string, string>;
+  headers: Headers;
 
-  readonly headers: Headers;
-
-  readonly body: RawBody;
+  body: RawBody | undefined;
 }
 
-interface Headers extends Iterable<[Lowercase<string>, string]> {
+export interface Headers extends Iterable<[Lowercase<string>, string]> {
   get(name: string): string;
 }
 
-interface MutableHeaders extends Headers {
+export interface MutableHeaders extends Headers {
   set(name: string, value: string): void;
 }
 
-interface RawBody {
+export interface RawBody {
   bodyUsed: boolean;
 
   json(): Promise<Json>;
   formData(): Promise<Record<string, string>>;
   arrayBuffer(): Promise<ArrayBuffer>;
   // stream(): Promise<ReadableStream>; // no such a thing in node.js
+}
+
+export class InMemoryJsonRawBody implements RawBody {
+  bodyUsed = false;
+
+  constructor(public data: Json) {}
+
+  json(): Promise<Json> {
+    this.bodyUsed = true;
+    return Promise.resolve(this.data);
+  }
+
+  formData(): Promise<Record<string, string>> {
+    throw "todo";
+  }
+
+  arrayBuffer(): Promise<ArrayBuffer> {
+    throw "todo";
+  }
 }

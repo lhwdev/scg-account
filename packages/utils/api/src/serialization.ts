@@ -1,7 +1,17 @@
 export const serializerSymbol = Symbol("serializerOf");
 
-export interface Serializable<T> {
-  [serializerSymbol]: Serializer<T>;
+export type Serializable<T> =
+  | {
+      [serializerSymbol]: Serializer<T>;
+    }
+  | Serializer<T>;
+
+export function serializerOf<T>(serializable: Serializable<T>) {
+  if (serializerSymbol in serializable) {
+    return serializable[serializerSymbol];
+  } else {
+    return serializable;
+  }
 }
 
 export interface Serializer<T> {

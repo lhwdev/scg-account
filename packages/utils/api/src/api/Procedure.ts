@@ -1,12 +1,16 @@
 import { EntityBuilder } from "../builder/EntityBuilder";
-import { InputType, InputFunction, InputContainer } from "../builder/input";
+import {
+  InputParameters,
+  InputFunction,
+  InputContainer,
+} from "../builder/input";
 
-export class Procedure<Input extends InputType = {}>
+export class Procedure<Input extends InputParameters = {}>
   implements InputContainer<Input>
 {
   constructor(public inputHandler: InputFunction<Input>) {}
 
-  input<const Result extends InputType>(
+  input<const Result extends InputParameters>(
     handler: InputFunction<Result>,
   ): Procedure<Input & Result> {
     const previous = this.inputHandler;

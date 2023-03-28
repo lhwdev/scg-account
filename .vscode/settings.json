@@ -1,7 +1,7 @@
 {
   "eslint.packageManager": "pnpm",
   "eslint.format.enable": true,
-  "editor.formatOnPaste": true,
+  "editor.formatOnPaste": false, // formatter does strange things
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
   "vs-code-prettier-eslint.prettierLast": false,

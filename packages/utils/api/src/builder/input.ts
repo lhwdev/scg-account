@@ -1,84 +1,52 @@
-import { InputConstructor, InputHandler, inputHandlerOf } from "../index";
-import { Json, Nested, Serializable, serializerSymbol } from "../serialization";
+import { ApiContext, RequestContext, ResponseContext } from "../context";
+import { Json, Nested, Serializable, serializerOf } from "../serialization";
 
-// builders
+// handler functions
 
-export function param<T>(
-  serializable: Serializable<T>,
-  parameter: RequestParameter,
-): Parameter<T>;
+export interface RequestProxy {
+  // TODO: headers
+  pathParams: Record<string, ParameterSource<RequestContext>>;
+  queryParams: Record<string, ParameterSource<RequestContext>>;
 
-export function param<T, Constructor extends InputConstructor<T>>(
-  constructor: Constructor,
-): Parameter<T>;
+  headers: Record<string, ParameterSource<RequestContext>>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function param(
-  ...args:
-    | [Serializable<unknown>, RequestParameter]
-    | [InputConstructor<unknown>]
-): Parameter {
-  if (args.length == 2) {
-    const [serializable, parameter] = args;
-    const serializer = serializable[serializerSymbol];
-    return {
-      [handlerSymbol]: {
-        serialize(context, data) {
-          return parameter[handlerSymbol].serialize(
-            context,
-            serializer.serialize(data),
-          );
-        },
-        async deserialize(context) {
-          return serializer.deserialize(
-            await parameter[handlerSymbol].deserialize(context),
-          );
-        },
-      },
-    };
-  } else {
-    const [constructor] = args;
-    return { [handlerSymbol]: inputHandlerOf(constructor) };
-  }
+  body: ParameterSource<RequestContext>;
 }
 
-// types
+export interface ResponseProxy {
+  headers: Record<string, ParameterSource<ResponseContext>>;
 
-interface RequestProxy {
-  params: Record<string, RequestParameter>;
+  body: ParameterSource<ResponseContext>;
 }
 
-export const handlerSymbol = Symbol("handler");
+export type InputParameters = Record<
+  string,
+  Nested<Parameter<unknown, RequestContext>>
+>;
 
-export interface RequestParameter {
-  [handlerSymbol]: InputHandler<Json>;
-}
-
-export interface Parameter<T = unknown> {
-  [handlerSymbol]: InputHandler<T>;
-}
-
-export type InputFunction<Result extends InputType> = (
+export type InputFunction<T extends InputParameters> = (
   request: RequestProxy,
-) => Result;
+) => T;
 
-export type InputType = Record<string, Nested<Parameter>>;
+export type ResultParameters = Nested<Parameter<unknown, ResponseContext>>;
 
-// 으악 유사 Visitor + mapping 구현하기가 이렇게 어려울수가
+export type ResultFunction<T extends ResultParameters> = (
+  response: ResponseContext,
+) => T;
+
+// more types around handler functions
+
 type MapInputReturnItem<T extends Parameter> = T extends Parameter<infer Inner>
   ? Inner
   : never;
 
-type MapInputReturnRecord<T extends InputType> = {
+type MapInputReturnRecord<T extends Record<string, Nested<Parameter>>> = {
   [Key in keyof T]: MapInputReturn<T[Key]>;
 };
 
-type MapInputReturnArray<T extends Nested<Parameter>[]> = T extends [
-  infer Head extends Parameter,
-  ...infer Tails extends Nested<Parameter>[],
-]
-  ? [MapInputReturnItem<Head>, ...MapInputReturnArray<Tails>]
-  : [];
+type MapInputReturnArray<T extends Nested<Parameter>[]> = {
+  [Key in keyof T]: MapInputReturn<T[Key]>;
+};
 
 type MapInputReturn<T extends Nested<Parameter>> = T extends Nested<Parameter>[]
   ? MapInputReturnArray<T>
@@ -88,8 +56,72 @@ type MapInputReturn<T extends Nested<Parameter>> = T extends Nested<Parameter>[]
   ? MapInputReturnItem<T>
   : never;
 
-export interface InputContainer<Input extends InputType> {
-  input<const ResultParameters extends InputType>(
-    handler: InputFunction<ResultParameters>,
-  ): InputContainer<Input & ResultParameters>;
+export type InputTypeOf<Input extends Record<string, Nested<Parameter>>> =
+  MapInputReturnRecord<Input>;
+
+export interface InputContainer<Input extends InputParameters> {
+  input<const Input2 extends InputParameters>(
+    handler: InputFunction<Input2>,
+  ): InputContainer<Input & Input2>;
+}
+
+// inside handler functions
+
+export function param<T, Context extends ApiContext>(
+  serializable: Serializable<T>,
+  parameter: ParameterSource<Context>,
+): Parameter<T, Context>;
+
+export function param<
+  T,
+  Constructor extends ParameterHandler<T, RequestContext>,
+>(constructor: Constructor): Parameter<T, RequestContext>;
+
+export function param<
+  T,
+  Constructor extends ParameterHandler<T, ResponseContext>,
+>(constructor: Constructor): Parameter<T, ResponseContext>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function param(
+  ...args:
+    | [Serializable<unknown>, ParameterSource<ApiContext>]
+    | [ParameterHandler<unknown, ApiContext>]
+): Parameter<unknown, ApiContext> {
+  if (args.length == 2) {
+    const [serializable, parameter] = args;
+    const serializer = serializerOf(serializable);
+    return {
+      [handlerSymbol]: {
+        serialize(context, data) {
+          return parameter.serialize(context, serializer.serialize(data));
+        },
+        async deserialize(context) {
+          return serializer.deserialize(await parameter.deserialize(context));
+        },
+      },
+    };
+  } else {
+    const [constructor] = args;
+    return { [handlerSymbol]: constructor };
+  }
+}
+
+export interface ParameterSource<Context extends ApiContext> {
+  serialize(context: Context, data: Json): Promise<void>;
+  deserialize(context: Context): Promise<Json>;
+}
+
+export const handlerSymbol = Symbol("handler");
+
+export interface Parameter<
+  T = unknown,
+  Context extends ApiContext = ApiContext,
+> {
+  [handlerSymbol]: ParameterHandler<T, Context>;
+}
+
+export interface ParameterHandler<T, Context extends ApiContext> {
+  serialize(context: Context, data: T): Promise<void>;
+  deserialize(context: Context): Promise<T>;
 }
