@@ -1,9 +1,9 @@
-import { RouteInterface } from "..";
-import { InputParameters, ResultParameter } from "../builder";
+import { RouteInterface } from "../route";
+import { InputParameters, ResultParameters } from "../builder";
 
 export class Action<
-  Input extends InputParameters = {},
-  Result extends ResultParameter | undefined = undefined,
+  Input extends InputParameters = InputParameters,
+  Result extends ResultParameters | undefined = ResultParameters | undefined,
 > implements RouteInterface<Input>
 {
   constructor(

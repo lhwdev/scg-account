@@ -11,8 +11,8 @@ function requestProxyOf(name: "pathParams" | "queryParams") {
   return new Proxy<Record<string, ParameterSource<RequestContext>>>(
     {},
     {
-      get(_target, p, _receiver): ParameterSource<RequestContext> {
-        if (typeof p !== "string") throw Error("cannot index by symbol");
+      get(_target, p, _receiver): ParameterSource<RequestContext> | undefined {
+        if (typeof p !== "string") return undefined;
 
         return {
           async serialize(context, data) {
@@ -37,8 +37,8 @@ class RequestProxyImpl implements RequestProxy {
   >(
     {},
     {
-      get(_target, p, _receiver): ParameterSource<RequestContext> {
-        if (typeof p !== "string") throw Error("cannot index by symbol");
+      get(_target, p, _receiver): ParameterSource<RequestContext> | undefined {
+        if (typeof p !== "string") return undefined;
 
         return {
           async serialize(context, data) {
@@ -71,6 +71,26 @@ export const requestProxyImpl = new RequestProxyImpl();
 // response
 
 class ResponseProxyImpl implements ResponseProxy {
+  headers: Record<string, ParameterSource<ResponseContext>> = new Proxy<
+    Record<string, ParameterSource<ResponseContext>>
+  >(
+    {},
+    {
+      get(_target, p, _receiver): ParameterSource<ResponseContext> | undefined {
+        if (typeof p !== "string") return undefined;
+
+        return {
+          async serialize(context, data) {
+            context.headers.set(p, JSON.stringify(data));
+          },
+          async deserialize(context) {
+            return JSON.parse(context.headers.get(p));
+          },
+        };
+      },
+    },
+  );
+
   body: ParameterSource<ResponseContext> = {
     async serialize(context, data) {
       context.body = new InMemoryJsonRawBody(data);
@@ -84,3 +104,5 @@ class ResponseProxyImpl implements ResponseProxy {
     },
   };
 }
+
+export const responseProxyImpl = new ResponseProxyImpl();

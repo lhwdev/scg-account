@@ -12,7 +12,9 @@ export interface RequestContext extends ApiContext {
 }
 
 export interface ResponseContext extends ApiContext {
-  headers: Headers;
+  request: RequestContext;
+
+  headers: MutableHeaders;
 
   body: RawBody | undefined;
 }

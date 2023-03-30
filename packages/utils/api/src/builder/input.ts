@@ -1,5 +1,6 @@
 import { ApiContext, RequestContext, ResponseContext } from "../context";
 import { Json, Nested, Serializable, serializerOf } from "../serialization";
+import { Modify } from "../type";
 
 // handler functions
 
@@ -24,14 +25,15 @@ export type InputParameters = Record<
   Nested<Parameter<unknown, RequestContext>>
 >;
 
-export type InputFunction<T extends InputParameters> = (
+export type InputFunction<T extends InputParameters = InputParameters> = (
   request: RequestProxy,
+  previous: PreviousProxy,
 ) => T;
 
 export type ResultParameters = Nested<Parameter<unknown, ResponseContext>>;
 
-export type ResultFunction<T extends ResultParameters> = (
-  response: ResponseContext,
+export type ResultFunction<T extends ResultParameters = ResultParameters> = (
+  response: ResponseProxy,
 ) => T;
 
 // more types around handler functions
@@ -44,9 +46,12 @@ type MapInputReturnRecord<T extends Record<string, Nested<Parameter>>> = {
   [Key in keyof T]: MapInputReturn<T[Key]>;
 };
 
-type MapInputReturnArray<T extends Nested<Parameter>[]> = {
-  [Key in keyof T]: MapInputReturn<T[Key]>;
-};
+type MapInputReturnArray<T extends Nested<Parameter>[]> = T extends [
+  infer Head extends Nested<Parameter>,
+  ...infer Tail extends Nested<Parameter>[],
+]
+  ? [MapInputReturn<Head>, ...MapInputReturnArray<Tail>]
+  : [];
 
 type MapInputReturn<T extends Nested<Parameter>> = T extends Nested<Parameter>[]
   ? MapInputReturnArray<T>
@@ -59,24 +64,47 @@ type MapInputReturn<T extends Nested<Parameter>> = T extends Nested<Parameter>[]
 export type InputTypeOf<Input extends Record<string, Nested<Parameter>>> =
   MapInputReturnRecord<Input>;
 
-export interface InputContainer<Input extends InputParameters> {
+export class InputContainer<Input extends InputParameters = InputParameters> {
+  constructor(public value: Input) {}
+
   input<const Input2 extends InputParameters>(
     handler: InputFunction<Input2>,
-  ): InputContainer<Input & Input2>;
+  ): InputContainer<Modify<Input, Input2>> {
+    throw `TODO input(${handler})`;
+  }
+}
+
+export interface InputContainerWrapper<Input extends InputParameters> {
+  input<const Input2 extends InputParameters>(
+    handler: InputFunction<Input2>,
+  ): InputContainerWrapper<Modify<Input, Input2>>;
 }
 
 // inside handler functions
 
+/**
+ * @example param(User, request.pathParams.id)
+ * @example param(User, request.headers.authentication)
+ *
+ * @example param(UserData, response.body)
+ * @example param(User.Authentication, response.haeders["set-cookie"])
+ */
 export function param<T, Context extends ApiContext>(
   serializable: Serializable<T>,
   parameter: ParameterSource<Context>,
 ): Parameter<T, Context>;
 
+/**
+ * @example param(User.asInput("authenticated"))
+ */
 export function param<
   T,
   Constructor extends ParameterHandler<T, RequestContext>,
 >(constructor: Constructor): Parameter<T, RequestContext>;
 
+/**
+ * @example param(User.Data.asResult({ santinization: true })) // read all information of that user which is accessible from user subject(provided by Authentication)
+ */
 export function param<
   T,
   Constructor extends ParameterHandler<T, ResponseContext>,

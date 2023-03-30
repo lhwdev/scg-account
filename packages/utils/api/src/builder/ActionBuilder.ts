@@ -1,8 +1,9 @@
 import { Action } from "../api/Action";
+import { Modify } from "../type";
 import {
   InputParameters,
   InputFunction,
-  InputContainer,
+  InputContainerWrapper,
   ResultParameters,
 } from "./input";
 import { requestProxyImpl } from "./proxy";
@@ -10,15 +11,15 @@ import { requestProxyImpl } from "./proxy";
 // builders
 
 export class ActionBuilder<
-  Input extends InputParameters,
-  Result extends ResultParameters | undefined,
-> implements InputContainer<Input>
+  Input extends InputParameters = InputParameters,
+  Result extends ResultParameters | undefined = ResultParameters | undefined,
+> implements InputContainerWrapper<Input>
 {
   constructor(private data: ActionData<Input, Result>) {}
 
   input<const Input2 extends InputParameters>(
     handler: InputFunction<Input2>,
-  ): ActionBuilder<Input & Input2, Result> {
+  ): ActionBuilder<Modify<Input, Input2>, Result> {
     return new ActionBuilder({
       ...this.data,
       inputParameters: {

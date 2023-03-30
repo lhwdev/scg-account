@@ -1,40 +1,42 @@
 // index.ts mimic but builder edition
 
 import { Procedure } from "../api/Procedure";
+import { Routes } from "../api/Routes";
+import { ActionBuilder } from "./ActionBuilder";
+import { EntityBuilder } from "./EntityBuilder";
 
 export * from "./input";
 
 export * from "../api/Procedure";
 export * from "./EntityBuilder";
 
-type Route = Routes<RoutesRecord> | Entity | ActionRoute;
+type BuilderRoute =
+  | RoutesBuilder<BuilderRoutesRecord>
+  | EntityBuilder
+  | ActionBuilder;
 
-type RoutesRecord = { [key: string]: Route };
+type BuilderRoutesRecord = { [key: string]: BuilderRoute };
 
-type Routes<T extends RoutesRecord> = {
-  routes: T;
-};
+class RoutesBuilder<T extends BuilderRoutesRecord> {
+  constructor(public routes: T) {}
 
-type ActionRoute<A extends Action = Action> = {
-  action: A;
-};
-
-type Entity<Actions extends Record<string, Action> = Record<string, Action>> = {
-  actions: Actions;
-};
-
-type Action = {};
+  build(): Routes<{ [Route in keyof T]: ReturnType<Route["build"]> }>;
+}
 
 export function createHttpApiBuilder(): HttpApiBuilder {
   return new HttpApiBuilder();
 }
 
 class HttpApiBuilder {
-  procedure = new Procedure(_request => ({}));
+  procedure = new Procedure({});
+
+  buildHttpApi<const Record extends BuilderRoutesRecord>(routesRecord: Record) {
+    routes(routesRecord);
+  }
 }
 
-export function routes<const Record extends RoutesRecord>(
+export function routes<const Record extends BuilderRoutesRecord>(
   routes: Record,
-): Routes<Record> {
-  return { routes };
+): RoutesBuilder<Record> {
+  return new RoutesBuilder(routes);
 }
