@@ -1,6 +1,12 @@
+import { InputContainerBuilder } from "./builder";
 import { Json } from "./serialization";
 
-export class ApiContext {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ApiContext {}
+
+export interface ParameterContext extends ApiContext {
+  currentInputContainer: InputContainerBuilder;
+}
 
 export interface RequestContext extends ApiContext {
   pathParams: Record<string, string>;
@@ -11,13 +17,17 @@ export interface RequestContext extends ApiContext {
   body?: RawBody;
 }
 
+export type RequestParameterContext = ParameterContext & RequestContext;
+
 export interface ResponseContext extends ApiContext {
-  request: RequestContext;
+  request: RequestParameterContext;
 
   headers: MutableHeaders;
 
   body: RawBody | undefined;
 }
+
+export type ResponseParameterContext = ParameterContext & ResponseContext;
 
 export interface Headers extends Iterable<[Lowercase<string>, string]> {
   get(name: string): string;

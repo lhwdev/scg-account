@@ -1,17 +1,28 @@
+import { InputParameters, Parameter, PhantomParameter } from "../api/input";
 import {
   InMemoryJsonRawBody,
-  RequestContext,
-  ResponseContext,
+  ParameterContext,
+  RequestParameterContext,
+  ResponseParameterContext,
 } from "../context";
-import { ParameterSource, RequestProxy, ResponseProxy } from "./input";
+import {
+  ParameterSource,
+  PreviousTypeOf,
+  RequestParameterProxy,
+  ResponseParameterProxy,
+} from "./input";
 
 // request
 
-function requestProxyOf(name: "pathParams" | "queryParams") {
-  return new Proxy<Record<string, ParameterSource<RequestContext>>>(
+function requestParameterProxyOf(name: "pathParams" | "queryParams") {
+  return new Proxy<Record<string, ParameterSource<RequestParameterContext>>>(
     {},
     {
-      get(_target, p, _receiver): ParameterSource<RequestContext> | undefined {
+      get(
+        _target,
+        p,
+        _receiver,
+      ): ParameterSource<RequestParameterContext> | undefined {
         if (typeof p !== "string") return undefined;
 
         return {
@@ -23,21 +34,28 @@ function requestProxyOf(name: "pathParams" | "queryParams") {
           },
         };
       },
+      has(_target, p) {
+        return typeof p === "string";
+      },
     },
   );
 }
 
-class RequestProxyImpl implements RequestProxy {
-  pathParams: Record<string, ParameterSource<RequestContext>> =
-    requestProxyOf("pathParams");
-  queryParams: Record<string, ParameterSource<RequestContext>> =
-    requestProxyOf("queryParams");
-  headers: Record<string, ParameterSource<RequestContext>> = new Proxy<
-    Record<string, ParameterSource<RequestContext>>
+class RequestParameterProxyImpl implements RequestParameterProxy {
+  pathParams: Record<string, ParameterSource<RequestParameterContext>> =
+    requestParameterProxyOf("pathParams");
+  queryParams: Record<string, ParameterSource<RequestParameterContext>> =
+    requestParameterProxyOf("queryParams");
+  headers: Record<string, ParameterSource<RequestParameterContext>> = new Proxy<
+    Record<string, ParameterSource<RequestParameterContext>>
   >(
     {},
     {
-      get(_target, p, _receiver): ParameterSource<RequestContext> | undefined {
+      get(
+        _target,
+        p,
+        _receiver,
+      ): ParameterSource<RequestParameterContext> | undefined {
         if (typeof p !== "string") return undefined;
 
         return {
@@ -49,10 +67,13 @@ class RequestProxyImpl implements RequestProxy {
           },
         };
       },
+      has(_target, p) {
+        return typeof p === "string";
+      },
     },
   );
 
-  body: ParameterSource<RequestContext> = {
+  body: ParameterSource<RequestParameterContext> = {
     async serialize(context, data) {
       context.body = new InMemoryJsonRawBody(data);
     },
@@ -66,32 +87,38 @@ class RequestProxyImpl implements RequestProxy {
   };
 }
 
-export const requestProxyImpl = new RequestProxyImpl();
+export const requestParameterProxyImpl = new RequestParameterProxyImpl();
 
 // response
 
-class ResponseProxyImpl implements ResponseProxy {
-  headers: Record<string, ParameterSource<ResponseContext>> = new Proxy<
-    Record<string, ParameterSource<ResponseContext>>
-  >(
-    {},
-    {
-      get(_target, p, _receiver): ParameterSource<ResponseContext> | undefined {
-        if (typeof p !== "string") return undefined;
+class ResponseParameterProxyImpl implements ResponseParameterProxy {
+  headers: Record<string, ParameterSource<ResponseParameterContext>> =
+    new Proxy<Record<string, ParameterSource<ResponseParameterContext>>>(
+      {},
+      {
+        get(
+          _target,
+          p,
+          _receiver,
+        ): ParameterSource<ResponseParameterContext> | undefined {
+          if (typeof p !== "string") return undefined;
 
-        return {
-          async serialize(context, data) {
-            context.headers.set(p, JSON.stringify(data));
-          },
-          async deserialize(context) {
-            return JSON.parse(context.headers.get(p));
-          },
-        };
+          return {
+            async serialize(context, data) {
+              context.headers.set(p, JSON.stringify(data));
+            },
+            async deserialize(context) {
+              return JSON.parse(context.headers.get(p));
+            },
+          };
+        },
+        has(_target, p) {
+          return typeof p === "string";
+        },
       },
-    },
-  );
+    );
 
-  body: ParameterSource<ResponseContext> = {
+  body: ParameterSource<ResponseParameterContext> = {
     async serialize(context, data) {
       context.body = new InMemoryJsonRawBody(data);
     },
@@ -105,4 +132,37 @@ class ResponseProxyImpl implements ResponseProxy {
   };
 }
 
-export const responseProxyImpl = new ResponseProxyImpl();
+export const responseParamterProxyImpl = new ResponseParameterProxyImpl();
+
+export function previousParameterProxyImpl<Input extends InputParameters>(
+  previous: Input,
+): PreviousTypeOf<Input> {
+  // I FORGAVE TO GIVE TYPES
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const newProxy = (current: any, getCurrent: (input: any) => any): any =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    new Proxy<any>(previous, {
+      get(_target, p, _receiver) {
+        if (typeof p !== "string") return undefined;
+
+        const item = current[p];
+        if (item === undefined) {
+          return undefined;
+        }
+
+        if (item instanceof Parameter) {
+          return new (class extends PhantomParameter {
+            async deserialize(context: ParameterContext) {
+              context.currentInputContainer.value;
+            }
+          })();
+        }
+
+        return newProxy(item, input => input[p]);
+      },
+      set(_target, _p, _newValue, _receiver) {
+        throw new Error("modification not allowed for proxy");
+      },
+    });
+  return newProxy(previous, input => input);
+}

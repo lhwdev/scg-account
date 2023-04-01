@@ -1,14 +1,15 @@
 import { Action, Entity, EntityActions } from "../api";
+import { InputParameters } from "../api/input";
 import { ActionType, actionTypes } from "../route";
 import { Modify } from "../type";
 import { ActionBuilder } from "./ActionBuilder";
 import {
-  InputParameters,
   InputFunction,
   InputContainerWrapper,
   ResultFunction,
+  InputContainerBuilder,
 } from "./input";
-import { requestProxyImpl, responseProxyImpl } from "./proxy";
+import { responseParamterProxyImpl } from "./proxy";
 
 // builders
 
@@ -20,21 +21,18 @@ export class EntityBuilder<
   constructor(private data: EntityData<Input, Actions>) {}
 
   input<const Input2 extends InputParameters>(
-    handler: InputFunction<Input2>,
+    handler: InputFunction<Input2, Input>,
   ): EntityBuilder<Modify<Input, Input2>, Actions> {
     return new EntityBuilder({
       ...this.data,
-      inputParameters: {
-        ...this.data.inputParameters,
-        ...handler(requestProxyImpl),
-      },
+      input: this.data.input.withInput(handler),
     });
   }
 
   action<
     const Type extends ActionType,
-    const Params extends ActionParams<Input2Fn, ResultFn>,
-    const Input2Fn extends InputFunction | undefined,
+    const Params extends ActionParams<Input, Input2Fn, ResultFn>,
+    const Input2Fn extends InputFunction<InputParameters, Input> | undefined,
     const ResultFn extends ResultFunction | undefined,
   >(
     type: Type,
@@ -47,15 +45,15 @@ export class EntityBuilder<
     >
   > {
     const builder = new ActionBuilder({
-      inputParameters: {
-        ...this.data.inputParameters,
-        ...("input" in params ? params.input ?? {} : {}),
-      },
+      input:
+        "input" in params
+          ? this.data.input.withInput(params.input)
+          : this.data.input,
       result:
         "result" in params
           ? params.result === undefined
             ? undefined
-            : params.result(responseProxyImpl)
+            : params.result(responseParamterProxyImpl)
           : undefined,
     });
     return new EntityBuilder({
@@ -70,8 +68,12 @@ export class EntityBuilder<
     });
   }
 
+  mockInput(): Input {
+    throw "only for type preview";
+  }
+
   build(name: string): Entity<Input, Actions> {
-    return new Entity(name, this.data.inputParameters, this.data.actions);
+    return new Entity(name, this.data.input, this.data.actions);
   }
 }
 
@@ -80,8 +82,8 @@ type ActionContainer<
   Actions extends EntityActions = EntityActions,
 > = {
   [Type in ActionType]: <
-    const Params extends ActionParams<Input2Fn, ResultFn>,
-    const Input2Fn extends InputFunction | undefined,
+    const Params extends ActionParams<Input, Input2Fn, ResultFn>,
+    const Input2Fn extends InputFunction<InputParameters, Input> | undefined,
     const ResultFn extends ResultFunction | undefined,
   >(
     params: Params,
@@ -95,7 +97,10 @@ type ActionContainer<
 };
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface EntityBuilder extends ActionContainer {}
+export interface EntityBuilder<
+  Input extends InputParameters = InputParameters,
+  Actions extends EntityActions = EntityActions,
+> extends ActionContainer<Input, Actions> {}
 
 for (const type of actionTypes) {
   const lowerType = type.toLowerCase() as Lowercase<typeof type>;
@@ -118,7 +123,8 @@ type ResultOf<T extends undefined | ((...args: any) => any)> = T extends (
   : undefined;
 
 type ActionParams<
-  InputFn extends InputFunction | undefined,
+  ParentInput extends InputParameters,
+  InputFn extends InputFunction<InputParameters, ParentInput> | undefined,
   ResultFn extends ResultFunction | undefined,
 > = (InputFn extends undefined ? {} : { input: InputFn }) &
   (ResultFn extends undefined ? {} : { result: ResultFn });
@@ -127,6 +133,6 @@ type EntityData<
   Input extends InputParameters,
   Actions extends EntityActions,
 > = {
-  inputParameters: Input;
+  input: InputContainerBuilder<Input>;
   actions: Actions;
 };

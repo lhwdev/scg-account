@@ -1,31 +1,34 @@
 import { EntityBuilder } from "../builder/EntityBuilder";
 import {
-  InputParameters,
   InputFunction,
   InputContainerWrapper,
+  InputContainerBuilder,
 } from "../builder/input";
-import { requestProxyImpl } from "../builder/proxy";
 import { Modify } from "../type";
+import { InputParameters } from "./input";
 
-export class Procedure<Input extends InputParameters = {}>
+export class Procedure<Input extends InputParameters = InputParameters>
   implements InputContainerWrapper<Input>
 {
-  constructor(public inputParameters: Input) {}
+  constructor(public data: PrecedureData<Input>) {}
 
   input<const Input2 extends InputParameters>(
     handler: InputFunction<Input2>,
   ): Procedure<Modify<Input, Input2>> {
-    const previous = this.inputParameters;
     return new Procedure({
-      ...previous,
-      ...handler(requestProxyImpl),
+      ...this.data,
+      input: this.data.input.withInput(handler),
     });
   }
 
   entity(): EntityBuilder<Input, {}> {
     return new EntityBuilder({
-      inputParameters: this.inputParameters,
+      input: this.data.input,
       actions: {},
     });
   }
+}
+
+interface PrecedureData<Input extends InputParameters> {
+  input: InputContainerBuilder<Input>;
 }

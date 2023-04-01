@@ -1,5 +1,6 @@
-import { InputParameters } from "../builder";
+import { InputContainerBuilder } from "../builder";
 import { Route } from "../route";
+import { InputParameters } from "./input";
 
 export type RoutesRecord<Input extends InputParameters = InputParameters> =
   Record<string, Route<Input>>;
@@ -10,7 +11,11 @@ export class Routes<
 > extends Route<Input> {
   parent: Routes<RoutesRecord> | undefined;
 
-  constructor(name: string, input: Input, public items: T) {
+  constructor(
+    name: string,
+    input: InputContainerBuilder<Input>,
+    public items: T,
+  ) {
     super(name, input);
   }
 }
