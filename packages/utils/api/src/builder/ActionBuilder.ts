@@ -1,7 +1,11 @@
 import { Action } from "../api/Action";
-import { InputParameters, ResultParameters } from "../api/input";
+import { InputParameters, ResultParameters } from "../api/parameter";
 import { Modify } from "../type";
-import { InputFunction, InputContainerWrapper, InputContainer } from "./input";
+import {
+  InputFunction,
+  InputContainerWrapper,
+  InputContainer,
+} from "./parameter";
 
 // builders
 

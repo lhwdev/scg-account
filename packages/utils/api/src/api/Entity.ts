@@ -2,7 +2,7 @@ import { InputContainer } from "../builder";
 import { ActionType, Route } from "../route";
 import { Action } from "./Action";
 import { Routes, RoutesRecord } from "./Routes";
-import { InputParameters } from "./input";
+import { InputParameters } from "./parameter";
 
 export class Entity<
   Input extends InputParameters,

@@ -1,11 +1,21 @@
 import {
-  ParameterContext,
   RequestParameterContext,
   ResponseParameterContext,
-} from "../context";
-import { Nested } from "../serialization";
+  ParameterContext,
+} from "../../context";
+import { Nested } from "../../serialization";
+import { InputValue } from "./InputValueContainer";
 
-/// Parameters
+export type InputParameters = Record<
+  string,
+  Nested<Parameter<unknown, RequestParameterContext>>
+>;
+
+export type ResultParameters = Nested<
+  Parameter<unknown, ResponseParameterContext>
+>;
+
+// Paramter class
 
 const doNotImplementParameterByObjectLiteral = Symbol(
   "doNotImplementParameterByObject",
@@ -57,26 +67,5 @@ export abstract class PhantomParameter<
         return value;
       }
     })();
-  }
-}
-
-export type InputParameters = Record<
-  string,
-  Nested<Parameter<unknown, RequestParameterContext>>
->;
-
-export type ResultParameters = Nested<
-  Parameter<unknown, ResponseParameterContext>
->;
-
-/// InputContainer
-
-export type InputValue = Record<string, Nested<unknown>>;
-
-export class InputValueContainer<T extends InputValue> {
-  constructor(public rootValue: T /* , public container: */) {}
-
-  get<T>(parameter: LocatableParameter<T>): T {
-    return parameter.locateParameterValue(this.rootValue);
   }
 }

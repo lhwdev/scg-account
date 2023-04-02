@@ -1,5 +1,6 @@
 import { Routes, RoutesRecord } from "./api/Routes";
-import { InputContainer, InputParameters } from "./builder";
+import { InputParameters } from "./api/parameter";
+import { InputContainer } from "./builder";
 
 export interface RouteInterface<Input extends InputParameters> {
   name: string;

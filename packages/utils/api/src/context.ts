@@ -1,4 +1,4 @@
-import { InputValue, InputValueContainer } from "./api/input";
+import { InputValue, InputValueContainer } from "./api/parameter";
 import { Json } from "./serialization";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

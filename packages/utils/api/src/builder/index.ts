@@ -1,13 +1,15 @@
 // index.ts mimic but builder edition
 
+export * from "./ActionBuilder";
+export * from "./EntityBuilder";
+export * from "./parameter";
+export * from "./proxy";
+export * from "./RoutesBuilder";
+
 import { Procedure } from "../api/Procedure";
-import { InputParameters } from "../api/input";
+import { InputParameters } from "../api/parameter";
 import { BuilderRoutesRecord, RoutesBuilder } from "./RoutesBuilder";
-import { EmptyInputContainer, InputContainer } from "./input";
-
-export * from "./input";
-
-export * from "../api/Procedure";
+import { EmptyInputContainer, InputContainer } from "./parameter";
 
 export function createHttpApiBuilder(): HttpApiBuilder {
   return new HttpApiBuilder();

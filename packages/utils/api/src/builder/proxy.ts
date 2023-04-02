@@ -4,7 +4,8 @@ import {
   LocatableParameter,
   Parameter,
   PhantomParameter,
-} from "../api/input";
+  PreviousTypeOf,
+} from "../api/parameter";
 import {
   InMemoryJsonRawBody,
   ParameterContext,
@@ -13,10 +14,9 @@ import {
 } from "../context";
 import {
   ParameterSource,
-  PreviousTypeOf,
   RequestParameterProxy,
   ResponseParameterProxy,
-} from "./input";
+} from "./parameter";
 
 // request
 

@@ -1,5 +1,5 @@
 import { Action, Entity, EntityActions } from "../api";
-import { InputParameters } from "../api/input";
+import { InputParameters } from "../api/parameter";
 import { ActionType, actionTypes } from "../route";
 import { Modify } from "../type";
 import { ActionBuilder } from "./ActionBuilder";
@@ -8,7 +8,7 @@ import {
   InputContainerWrapper,
   ResultFunction,
   InputContainer,
-} from "./input";
+} from "./parameter";
 import { responseParamterProxyImpl } from "./proxy";
 
 // builders

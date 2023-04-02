@@ -3,9 +3,9 @@ import {
   InputFunction,
   InputContainerWrapper,
   InputContainer,
-} from "../builder/input";
+} from "../builder/parameter";
 import { Modify } from "../type";
-import { InputParameters } from "./input";
+import { InputParameters } from "./parameter";
 
 export class Procedure<Input extends InputParameters = InputParameters>
   implements InputContainerWrapper<Input>
@@ -13,7 +13,7 @@ export class Procedure<Input extends InputParameters = InputParameters>
   constructor(public data: PrecedureData<Input>) {}
 
   input<const Input2 extends InputParameters>(
-    handler: InputFunction<Input2>,
+    handler: InputFunction<Input2, Input>,
   ): Procedure<Modify<Input, Input2>> {
     return new Procedure({
       ...this.data,

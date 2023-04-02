@@ -1,10 +1,10 @@
 export const serializerSymbol = Symbol("serializerOf");
 
-export type Serializable<T> =
+export type Serializable<T, RawType extends Json = Json> =
   | {
-      [serializerSymbol]: Serializer<T>;
+      [serializerSymbol]: Serializer<T, RawType>;
     }
-  | Serializer<T>;
+  | Serializer<T, RawType>;
 
 export function serializerOf<T>(serializable: Serializable<T>) {
   if (serializerSymbol in serializable) {
@@ -14,9 +14,9 @@ export function serializerOf<T>(serializable: Serializable<T>) {
   }
 }
 
-export interface Serializer<T> {
-  serialize(data: T): Json;
-  deserialize(rawData: Json): T;
+export interface Serializer<T, RawType extends Json = Json> {
+  serialize(data: T): RawType;
+  deserialize(rawData: RawType): T;
 }
 
 export type BasicTypes = Nested<

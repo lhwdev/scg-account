@@ -1,9 +1,13 @@
 import { Routes } from "../api/Routes";
-import { InputParameters } from "../api/input";
+import { InputParameters } from "../api/parameter";
 import { Modify } from "../type";
 import { ActionBuilder } from "./ActionBuilder";
 import { EntityBuilder } from "./EntityBuilder";
-import { InputContainer, InputContainerWrapper, InputFunction } from "./input";
+import {
+  InputContainer,
+  InputContainerWrapper,
+  InputFunction,
+} from "./parameter";
 
 export type BuilderRoute =
   | RoutesBuilder<InputParameters, BuilderRoutesRecord>

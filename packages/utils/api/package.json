@@ -2,5 +2,9 @@
   "name": "@scg-utils/api",
   "main": "src/index.ts",
   "author": "lhwdev",
-  "license": "MIT"
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./builder.ts": "./src/builder/index.ts"
+  }
 }

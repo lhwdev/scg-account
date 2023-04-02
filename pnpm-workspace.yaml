@@ -1,2 +1,7 @@
 packages:
-  - "packages/*"
+  - packages/common
+  - packages/frontend
+  - packages/backend
+  - packages/utils/api
+  - packages/utils/api-frontend
+  - packages/utils/api-backend

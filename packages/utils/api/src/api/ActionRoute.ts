@@ -1,7 +1,7 @@
 import { Action } from "./Action";
 import { Route } from "../route";
 import { InputContainer } from "../builder";
-import { InputParameters } from "./input";
+import { InputParameters } from "./parameter";
 
 export class ActionRoute<
   A extends Action,

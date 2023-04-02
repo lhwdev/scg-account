@@ -1,6 +1,6 @@
 import { InputContainer } from "../builder";
 import { Route } from "../route";
-import { InputParameters } from "./input";
+import { InputParameters } from "./parameter";
 
 export type RoutesRecord<Input extends InputParameters = InputParameters> =
   Record<string, Route<Input>>;
