@@ -2,7 +2,7 @@ import { EntityBuilder } from "../builder/EntityBuilder";
 import {
   InputFunction,
   InputContainerWrapper,
-  InputContainerBuilder,
+  InputContainer,
 } from "../builder/input";
 import { Modify } from "../type";
 import { InputParameters } from "./input";
@@ -30,5 +30,5 @@ export class Procedure<Input extends InputParameters = InputParameters>
 }
 
 interface PrecedureData<Input extends InputParameters> {
-  input: InputContainerBuilder<Input>;
+  input: InputContainer<Input>;
 }

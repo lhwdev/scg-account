@@ -1,11 +1,11 @@
-import { InputContainerBuilder } from "./builder";
+import { InputValue, InputValueContainer } from "./api/input";
 import { Json } from "./serialization";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ApiContext {}
 
 export interface ParameterContext extends ApiContext {
-  currentInputContainer: InputContainerBuilder;
+  inputValues: InputValueContainer<InputValue>;
 }
 
 export interface RequestContext extends ApiContext {

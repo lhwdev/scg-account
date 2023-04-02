@@ -25,6 +25,10 @@ export interface Parameter {
 
 Parameter.prototype[doNotImplementParameterByObjectLiteral] = true;
 
+export interface LocatableParameter<T = unknown> {
+  locateParameterValue(value: InputValue): T;
+}
+
 export abstract class PhantomParameter<
   T = unknown,
   Context extends ParameterContext = ParameterContext,
@@ -41,6 +45,19 @@ export abstract class PhantomParameter<
       }
     })();
   }
+
+  validate(
+    validater: (value: T, context: Context) => void,
+  ): PhantomParameter<T, Context> {
+    const from = this;
+    return new (class extends PhantomParameter<T, Context> {
+      async deserialize(context: Context) {
+        const value = await from.deserialize(context);
+        validater(value, context);
+        return value;
+      }
+    })();
+  }
 }
 
 export type InputParameters = Record<
@@ -51,3 +68,15 @@ export type InputParameters = Record<
 export type ResultParameters = Nested<
   Parameter<unknown, ResponseParameterContext>
 >;
+
+/// InputContainer
+
+export type InputValue = Record<string, Nested<unknown>>;
+
+export class InputValueContainer<T extends InputValue> {
+  constructor(public rootValue: T /* , public container: */) {}
+
+  get<T>(parameter: LocatableParameter<T>): T {
+    return parameter.locateParameterValue(this.rootValue);
+  }
+}

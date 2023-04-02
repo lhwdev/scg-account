@@ -1,9 +1,9 @@
 import { Routes, RoutesRecord } from "./api/Routes";
-import { InputContainerBuilder, InputParameters } from "./builder";
+import { InputContainer, InputParameters } from "./builder";
 
 export interface RouteInterface<Input extends InputParameters> {
   name: string;
-  input: InputContainerBuilder<Input>;
+  input: InputContainer<Input>;
 }
 
 export class Route<Input extends InputParameters>
@@ -11,10 +11,7 @@ export class Route<Input extends InputParameters>
 {
   parent?: Routes<RoutesRecord>;
 
-  constructor(
-    public name: string,
-    public input: InputContainerBuilder<Input>,
-  ) {}
+  constructor(public name: string, public input: InputContainer<Input>) {}
 }
 
 export const actionTypes = [

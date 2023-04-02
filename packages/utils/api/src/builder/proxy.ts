@@ -1,4 +1,10 @@
-import { InputParameters, Parameter, PhantomParameter } from "../api/input";
+import {
+  InputParameters,
+  InputValue,
+  LocatableParameter,
+  Parameter,
+  PhantomParameter,
+} from "../api/input";
 import {
   InMemoryJsonRawBody,
   ParameterContext,
@@ -14,10 +20,43 @@ import {
 
 // request
 
+function immmutableProxy<T extends object>(
+  enumerable: boolean,
+  handler: ProxyHandler<T>,
+): ProxyHandler<T> {
+  function thisIsImmutable(): never {
+    throw new Error("modification not allowed for proxy");
+  }
+
+  return {
+    getOwnPropertyDescriptor(target, p) {
+      return {
+        enumerable,
+        writable: false,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        get: () => this.get!(target, p, undefined),
+      };
+    },
+    set(_target, _p, _newValue, _receiver) {
+      thisIsImmutable();
+    },
+    defineProperty(_target, _property, _attributes) {
+      thisIsImmutable();
+    },
+    deleteProperty(_target, _p) {
+      thisIsImmutable();
+    },
+    setPrototypeOf(_target, _v) {
+      thisIsImmutable();
+    },
+    ...handler,
+  };
+}
+
 function requestParameterProxyOf(name: "pathParams" | "queryParams") {
   return new Proxy<Record<string, ParameterSource<RequestParameterContext>>>(
     {},
-    {
+    immmutableProxy(false, {
       get(
         _target,
         p,
@@ -37,7 +76,7 @@ function requestParameterProxyOf(name: "pathParams" | "queryParams") {
       has(_target, p) {
         return typeof p === "string";
       },
-    },
+    }),
   );
 }
 
@@ -50,7 +89,7 @@ class RequestParameterProxyImpl implements RequestParameterProxy {
     Record<string, ParameterSource<RequestParameterContext>>
   >(
     {},
-    {
+    immmutableProxy(false, {
       get(
         _target,
         p,
@@ -70,7 +109,7 @@ class RequestParameterProxyImpl implements RequestParameterProxy {
       has(_target, p) {
         return typeof p === "string";
       },
-    },
+    }),
   );
 
   body: ParameterSource<RequestParameterContext> = {
@@ -95,7 +134,7 @@ class ResponseParameterProxyImpl implements ResponseParameterProxy {
   headers: Record<string, ParameterSource<ResponseParameterContext>> =
     new Proxy<Record<string, ParameterSource<ResponseParameterContext>>>(
       {},
-      {
+      immmutableProxy(false, {
         get(
           _target,
           p,
@@ -115,7 +154,7 @@ class ResponseParameterProxyImpl implements ResponseParameterProxy {
         has(_target, p) {
           return typeof p === "string";
         },
-      },
+      }),
     );
 
   body: ParameterSource<ResponseParameterContext> = {
@@ -138,31 +177,43 @@ export function previousParameterProxyImpl<Input extends InputParameters>(
   previous: Input,
 ): PreviousTypeOf<Input> {
   // I FORGAVE TO GIVE TYPES
+  // INSTEAD OF TYPES, LET'S WRITE TESTS! WOW
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const newProxy = (current: any, getCurrent: (input: any) => any): any =>
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    new Proxy<any>(previous, {
-      get(_target, p, _receiver) {
-        if (typeof p !== "string") return undefined;
+    new Proxy<any>(
+      current,
+      immmutableProxy(true, {
+        get(_target, p, _receiver) {
+          if (typeof p !== "string") return undefined;
 
-        const item = current[p];
-        if (item === undefined) {
-          return undefined;
-        }
+          const item = current[p];
+          if (item === undefined) {
+            return undefined;
+          }
 
-        if (item instanceof Parameter) {
-          return new (class extends PhantomParameter {
-            async deserialize(context: ParameterContext) {
-              context.currentInputContainer.value;
-            }
-          })();
-        }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const getNewCurrent = (input: any) => getCurrent(input)[p];
 
-        return newProxy(item, input => input[p]);
-      },
-      set(_target, _p, _newValue, _receiver) {
-        throw new Error("modification not allowed for proxy");
-      },
-    });
+          if (item instanceof Parameter) {
+            return new (class
+              extends PhantomParameter
+              implements LocatableParameter
+            {
+              async deserialize(context: ParameterContext) {
+                return getCurrent(context.inputValues.rootValue);
+              }
+
+              locateParameterValue(value: InputValue): unknown {
+                return getCurrent(value);
+              }
+            })();
+          }
+
+          return newProxy(item, getNewCurrent);
+        },
+      }),
+    );
   return newProxy(previous, input => input);
 }

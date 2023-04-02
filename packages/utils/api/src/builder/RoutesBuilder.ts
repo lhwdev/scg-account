@@ -3,11 +3,7 @@ import { InputParameters } from "../api/input";
 import { Modify } from "../type";
 import { ActionBuilder } from "./ActionBuilder";
 import { EntityBuilder } from "./EntityBuilder";
-import {
-  InputContainerBuilder,
-  InputContainerWrapper,
-  InputFunction,
-} from "./input";
+import { InputContainer, InputContainerWrapper, InputFunction } from "./input";
 
 export type BuilderRoute =
   | RoutesBuilder<InputParameters, BuilderRoutesRecord>
@@ -48,6 +44,6 @@ type RoutesData<
   Input extends InputParameters,
   Items extends BuilderRoutesRecord,
 > = {
-  input: InputContainerBuilder<Input>;
+  input: InputContainer<Input>;
   items: Items;
 };

@@ -1,4 +1,4 @@
-import { InputContainerBuilder } from "../builder";
+import { InputContainer } from "../builder";
 import { ActionType, Route } from "../route";
 import { Action } from "./Action";
 import { Routes, RoutesRecord } from "./Routes";
@@ -12,7 +12,7 @@ export class Entity<
 
   constructor(
     name: string,
-    input: InputContainerBuilder<Input>,
+    input: InputContainer<Input>,
     public actions: Actions,
   ) {
     super(name, input);

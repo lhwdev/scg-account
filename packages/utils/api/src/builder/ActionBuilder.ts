@@ -1,11 +1,7 @@
 import { Action } from "../api/Action";
 import { InputParameters, ResultParameters } from "../api/input";
 import { Modify } from "../type";
-import {
-  InputFunction,
-  InputContainerWrapper,
-  InputContainerBuilder,
-} from "./input";
+import { InputFunction, InputContainerWrapper, InputContainer } from "./input";
 
 // builders
 
@@ -36,6 +32,6 @@ type ActionData<
   Input extends InputParameters,
   Result extends ResultParameters | undefined,
 > = {
-  input: InputContainerBuilder<Input>;
+  input: InputContainer<Input>;
   result: Result;
 };

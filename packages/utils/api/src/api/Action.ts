@@ -1,5 +1,5 @@
 import { RouteInterface } from "../route";
-import { InputContainerBuilder } from "../builder";
+import { InputContainer } from "../builder";
 import { InputParameters, ResultParameters } from "./input";
 
 export class Action<
@@ -9,7 +9,7 @@ export class Action<
 {
   constructor(
     public name: string,
-    public input: InputContainerBuilder<Input>,
+    public input: InputContainer<Input>,
     public result: Result,
   ) {}
 }

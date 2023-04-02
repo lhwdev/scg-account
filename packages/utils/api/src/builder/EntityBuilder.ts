@@ -7,7 +7,7 @@ import {
   InputFunction,
   InputContainerWrapper,
   ResultFunction,
-  InputContainerBuilder,
+  InputContainer,
 } from "./input";
 import { responseParamterProxyImpl } from "./proxy";
 
@@ -133,6 +133,6 @@ type EntityData<
   Input extends InputParameters,
   Actions extends EntityActions,
 > = {
-  input: InputContainerBuilder<Input>;
+  input: InputContainer<Input>;
   actions: Actions;
 };

@@ -3,6 +3,7 @@ import {
   InputParameters,
   ResultParameters,
   PhantomParameter,
+  LocatableParameter,
 } from "../api/input";
 import {
   ParameterContext,
@@ -44,20 +45,15 @@ export type ResultFunction<T extends ResultParameters = ResultParameters> = (
   response: ResponseParameterProxy,
 ) => T;
 
-// InputFunction call implementation
-
-export class InputContainerBuilder<
+export class InputContainer<
   Input extends InputParameters = InputParameters,
   Parent extends InputParameters = InputParameters,
 > {
-  constructor(
-    public parent: InputContainerBuilder<Parent> | undefined,
-    public value: Input,
-  ) {}
+  constructor(public parent: InputContainer<Parent>, public value: Input) {}
 
   withInput<const Input2 extends InputParameters>(
     handler: InputFunction<Input2, Input>,
-  ): InputContainerBuilder<Modify<Input, Input2>, Input> {
+  ): InputContainer<Modify<Input, Input2>, Input> {
     // tiny optimization
     const input2: Input2 =
       handler.length === 1
@@ -68,12 +64,18 @@ export class InputContainerBuilder<
             previousParameterProxyImpl(this.value),
           );
 
-    return new InputContainerBuilder(this, {
+    return new InputContainer(this, {
       ...this.value,
       ...input2,
     });
   }
 }
+
+export const EmptyInputContainer = new InputContainer(
+  undefined as unknown as InputContainer,
+  {},
+);
+EmptyInputContainer.parent = EmptyInputContainer;
 
 export interface InputContainerWrapper<Input extends InputParameters> {
   input<const Input2 extends InputParameters>(
@@ -192,7 +194,7 @@ export type ValueTypeOf<Input extends Nested<Parameter>> = MapInputReturn<
 
 interface GetPreviousType extends TypeFunction {
   return: this["argument"] extends Parameter<infer T>
-    ? PhantomParameter<T>
+    ? PhantomParameter<T> & LocatableParameter<T>
     : never;
 }
 
