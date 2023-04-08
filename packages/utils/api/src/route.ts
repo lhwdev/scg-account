@@ -10,7 +10,7 @@ export interface RouteInterface<Input extends InputParameters> {
 export class Route<Input extends InputParameters>
   implements RouteInterface<Input>
 {
-  parent?: Routes<RoutesRecord>;
+  parent?: Routes<InputParameters, RoutesRecord>;
 
   constructor(public name: string, public input: InputContainer<Input>) {}
 }

@@ -4,10 +4,10 @@ import { InputContainer } from "../builder";
 import { InputParameters } from "./parameter";
 
 export class ActionRoute<
-  A extends Action,
   Input extends InputParameters,
+  A extends Action,
 > extends Route<Input> {
-  constructor(public action: A, input: InputContainer<Input>) {
+  constructor(input: InputContainer<Input>, public action: A) {
     super(action.name, input);
   }
 }

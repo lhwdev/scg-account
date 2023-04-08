@@ -1,8 +1,27 @@
-import { Action, InputParameters, ResultParameters } from "@scg-utils/api";
+import {
+  Action,
+  InputParameters,
+  ResultParameters,
+  ValueTypeOf,
+} from "@scg-utils/api";
+import { apiSymbol } from "./common";
 
-export class ActionFrontend<
+export interface ActionFrontend<
   Input extends InputParameters,
-  Result extends ResultParameters,
+  Result extends ResultParameters | undefined,
 > {
-  constructor(public action: Action<Input, Result>) {}
+  [apiSymbol]: Action<Input, Result>;
+
+  (input: ValueTypeOf<Input>): Promise<
+    Result extends undefined
+      ? undefined
+      : ValueTypeOf<Result & ResultParameters>
+  >;
 }
+
+export type MapToActionFrontendType<A extends Action> = A extends Action<
+  infer Input extends InputParameters,
+  infer Result extends ResultParameters | undefined
+>
+  ? ActionFrontend<Input, Result>
+  : never;

@@ -34,7 +34,10 @@ export class RoutesBuilder<
 
   build(
     name: string,
-  ): Routes<{ [Route in keyof T]: ReturnType<T[Route]["build"]> }> {
+  ): Routes<
+    InputParameters,
+    { [Route in keyof T]: ReturnType<T[Route]["build"]> }
+  > {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const items: any = {};
     for (const [key, value] of Object.entries(this.data.items)) {

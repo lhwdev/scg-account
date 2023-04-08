@@ -1,11 +1,11 @@
-import { EntityBuilder } from "../builder/EntityBuilder";
+import { EntityBuilder } from "./EntityBuilder";
 import {
   InputFunction,
   InputContainerWrapper,
   InputContainer,
-} from "../builder/parameter";
+} from "./parameter";
 import { Modify } from "../type";
-import { InputParameters } from "./parameter";
+import { InputParameters } from "../api/parameter";
 
 export class Procedure<Input extends InputParameters = InputParameters>
   implements InputContainerWrapper<Input>

@@ -8,7 +8,7 @@ export class Entity<
   Input extends InputParameters,
   Actions extends EntityActions,
 > extends Route<Input> {
-  parent: Routes<RoutesRecord> | undefined;
+  parent: Routes<InputParameters, RoutesRecord> | undefined;
 
   constructor(
     name: string,
