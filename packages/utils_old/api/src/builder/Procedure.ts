@@ -12,9 +12,9 @@ export class Procedure<Input extends InputParameters = InputParameters>
 {
   constructor(public data: PrecedureData<Input>) {}
 
-  input<const Input2 extends InputParameters>(
-    handler: InputFunction<Input2, Input>,
-  ): Procedure<Modify<Input, Input2>> {
+  input<const Child extends InputParameters>(
+    handler: InputFunction<Child, Input>,
+  ): Procedure<Modify<Input, Child>> {
     return new Procedure({
       ...this.data,
       input: this.data.input.withInput(handler),

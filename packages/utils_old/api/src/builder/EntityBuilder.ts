@@ -20,9 +20,9 @@ export class EntityBuilder<
 {
   constructor(private data: EntityData<Input, Actions>) {}
 
-  input<const Input2 extends InputParameters>(
-    handler: InputFunction<Input2, Input>,
-  ): EntityBuilder<Modify<Input, Input2>, Actions> {
+  input<const Child extends InputParameters>(
+    handler: InputFunction<Child, Input>,
+  ): EntityBuilder<Modify<Input, Child>, Actions> {
     return new EntityBuilder({
       ...this.data,
       input: this.data.input.withInput(handler),

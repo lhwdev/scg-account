@@ -3,32 +3,31 @@ import { InputParameters } from "../api/parameter";
 import { Modify } from "../type";
 import { ActionBuilder } from "./ActionBuilder";
 import { EntityBuilder } from "./EntityBuilder";
-import {
-  InputContainer,
-  InputContainerWrapper,
-  InputFunction,
-} from "./parameter";
+import { InputFunction } from "./parameter";
+import { InputContainerWrapper } from "./parameter/InputContainerWrapper";
 
-export type BuilderRoute =
-  | RoutesBuilder<InputParameters, BuilderRoutesRecord>
-  | EntityBuilder
-  | ActionBuilder;
+export type BuilderRoute<Input extends InputParameters> =
+  | RoutesBuilder<Input, BuilderRoutesRecord>
+  | EntityBuilder<Input>
+  | ActionBuilder<InputFunction<Input, Input>>;
 
-export type BuilderRoutesRecord = { [key: string]: BuilderRoute };
+export type BuilderRoutesRecord<
+  ParentInput extends InputParameters = InputParameters,
+> = { [key: string]: BuilderRoute<ParentInput> };
 
 export class RoutesBuilder<
   Input extends InputParameters,
-  T extends BuilderRoutesRecord,
+  T extends BuilderRoutesRecord<Input>,
 > implements InputContainerWrapper<Input>
 {
   constructor(public data: RoutesData<Input, T>) {}
 
-  input<const Input2 extends InputParameters>(
-    handler: InputFunction<Input2, Input>,
-  ): RoutesBuilder<Modify<Input, Input2>, T> {
+  input<const Child extends InputParameters>(
+    handler: InputFunction<Child, Input>,
+  ): RoutesBuilder<Modify<Input, Child>, T> {
     return new RoutesBuilder({
       ...this.data,
-      input: this.data.input.withInput(handler),
+      input: handler,
     });
   }
 
@@ -51,6 +50,6 @@ type RoutesData<
   Input extends InputParameters,
   Items extends BuilderRoutesRecord,
 > = {
-  input: InputContainer<Input>;
+  input: InputFunction<Input>;
   items: Items;
 };

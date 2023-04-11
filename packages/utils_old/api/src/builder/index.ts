@@ -3,6 +3,7 @@
 export * from "./ActionBuilder";
 export * from "./EntityBuilder";
 export * from "./parameter";
+export * from "./Procedure";
 export * from "./proxy";
 export * from "./RoutesBuilder";
 

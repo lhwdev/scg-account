@@ -20,7 +20,7 @@ export type MapToFrontendType<R extends Route<InputParameters>> =
     infer Input extends InputParameters,
     any // why ts does not support something like A<infer B, infer C extends D<B>> ?
   >
-    ? R extends Routes<any, infer T extends RoutesRecord<Input>>
+    ? R extends Routes<any, infer T extends RoutesRecord<any>> // TODO: any
       ? RoutesFrontend<Input, T>
       : never
     : R extends ActionRoute<
