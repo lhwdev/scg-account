@@ -69,15 +69,9 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
 
-  packages/utils/api: {}
+  packages/utils/api/api: {}
 
-  packages/utils/api-backend:
-    dependencies:
-      '@scg-utils/api':
-        specifier: workspace:*
-        version: link:../api
-
-  packages/utils/api-frontend:
+  packages/utils/api/api-builder:
     dependencies:
       '@scg-utils/api':
         specifier: workspace:*
