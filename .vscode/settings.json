@@ -5,5 +5,10 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
   "vs-code-prettier-eslint.prettierLast": false,
-  "typescript.tsdk": "node_modules\\typescript\\lib"
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "cSpell.words": [
+    "datetime",
+    "HSTS",
+    "httpapi"
+  ]
 }
