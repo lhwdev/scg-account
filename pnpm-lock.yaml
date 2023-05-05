@@ -28,11 +28,11 @@ importers:
 
   packages/backend: {}
 
-  packages/frontend:
+  packages/frontend/app:
     dependencies:
       '@scg-account/backend':
         specifier: workspace:*
-        version: link:../backend
+        version: link:../../backend
       '@tanstack/react-query':
         specifier: ^4.27.0
         version: 4.27.0(react-dom@18.2.0)(react@18.2.0)
@@ -66,6 +66,12 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
+
+  packages/frontend/theme:
+    dependencies:
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
 
 packages:
 

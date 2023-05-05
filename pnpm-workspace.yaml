@@ -1,3 +1,4 @@
 packages:
-  - packages/frontend
+  - packages/frontend/app
+  - packages/frontend/theme
   - packages/backend
