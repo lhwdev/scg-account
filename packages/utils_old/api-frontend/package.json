@@ -1,9 +1,0 @@
-{
-  "name": "@scg-utils/api-frontend",
-  "main": "src/index.ts",
-  "author": "lhwdev",
-  "license": "MIT",
-  "dependencies": {
-    "@scg-utils/api": "workspace:*"
-  }
-}
