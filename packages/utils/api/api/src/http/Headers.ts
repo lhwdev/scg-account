@@ -50,6 +50,7 @@ export type PredefinedRequestHeaders = {
   range?: string;
   "alt-used"?: string; // rfc7848: HTTP Alternative Services
   "want-digest"?: string; // rfc3230: Instance Digests in HTTP
+  "service-worker-navigation-preload"?: string; // w3c Service Workers Nightly
 
   // caching
   "cache-control"?: string; // rfc9111(5.2): HTTP Caching
@@ -66,7 +67,23 @@ export type PredefinedRequestHeaders = {
   "access-control-request-headers"?: string; // w3 Fetch: CORS-preflight request
   "access-control-request-method"?: string; // w3 Fetch: CORS-preflight request
 
+  "sec-fetch-dest"?: string; // w3 Fetch Metadata Request Headers
+  "sec-fetch-mode"?: string; // w3 Fetch Metadata Request Headers
+  "sec-fetch-site"?: string; // w3 Fetch Metadata Request Headers
+  "sec-fetch-user"?: string; // w3 Fetch Metadata Request Headers
+
   "sec-purpose"?: string; // w3 Fetch: `Sec-Purpose` Header
+
+  // UA client hints (https://wicg.github.io/ua-client-hints/)
+  "sec-ch-ua"?: string;
+  "sec-ch-ua-arch"?: string;
+  "sec-ch-ua-bitness"?: string;
+  "sec-ch-ua-full-version-list"?: string;
+  "sec-ch-ua-mobile"?: string;
+  "sec-ch-ua-model"?: string;
+  "sec-ch-ua-platform"?: string;
+  "sec-ch-ua-platform-version"?: string;
+  "sec-ch-prefers-reduced-motion"?: string;
 
   // other
   cookie?: string[]; // rfc6295: HTTP State Management Mechanism
@@ -103,6 +120,7 @@ export type PredefinedResponseHeaders = {
 
   // debug
   "server-timing"?: string;
+  sourcemap?: string; // Source Map Revision 3: https://sourcemaps.info/spec.html
 
   // content
   date?: string;
@@ -134,7 +152,7 @@ export type PredefinedResponseHeaders = {
   // content hints
   accept?: string;
   "accept-ch"?: string; // rfc8942: HTTP Client Hints
-  vary?: string;
+  "critical-ch"?: string; // draft-davidben-http-client-hint-reliability-03 (https://datatracker.ietf.org/doc/html/draft-davidben-http-client-hint-reliability)
 
   tcn?: string; // rfc2295: Transparent Content Negotiation in HTTP
   alternates?: string; // rfc2295: Transparent Content Negotiation in HTTP
@@ -143,6 +161,8 @@ export type PredefinedResponseHeaders = {
   // caching
   "cache-control"?: string; // rfc9111(5.2): HTTP Caching
   "cache-status"?: string; // rfc9211: The Cache-Status HTTP Response Header Field
+
+  vary?: string;
 
   // authorization
   "www-authenticate"?: string;
@@ -167,6 +187,7 @@ export type PredefinedResponseHeaders = {
   "access-control-max-age"?: string; // w3 Fetch: response of CORS request
   "access-control-expose-headers"?: string; // w3 Fetch: response of CORS request
 
+  "permissions-policy"?: string; // w3 Permissions Policy
   "cross-origin-embedder-policy"?: string; // w3 HTML: Cross-origin embedder policies
   "cross-origin-embedder-policy-report-only"?: string; // w3 HTML: Cross-origin embedder policies
   "cross-origin-opener-policy"?: string; // w3 HTML: Cross-origin opener policies
@@ -189,10 +210,15 @@ export type PredefinedResponseHeaders = {
 
 export interface Headers extends Iterable<[string, string]> {
   get(key: string): string;
-  has(key: string): string;
+  has(key: string): boolean;
 }
-export interface RequestHeaders extends Headers, PredefinedRequestHeaders {}
 
-export interface ResponseHeaders extends Headers, PredefinedResponseHeaders {
+export type RequestHeaders = Headers & Readonly<PredefinedRequestHeaders>;
+export type ResponseHeaders = Headers & Readonly<PredefinedResponseHeaders>;
+
+export interface MutableHeaders extends Headers {
   set(key: string, value: string): void;
 }
+
+export type MutableRequestHeaders = MutableHeaders & PredefinedRequestHeaders;
+export type MutableResponseHeaders = MutableHeaders & PredefinedResponseHeaders;
