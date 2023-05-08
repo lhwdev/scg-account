@@ -1,0 +1,12 @@
+// config for Frontend
+{
+  "extends": "./tsconfig-base.json",
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "jsxImportSource": "@emotion/react",
+  },
+}

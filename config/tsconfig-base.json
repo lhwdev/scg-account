@@ -1,3 +1,4 @@
+// all sub-tsconfig should extend from this.
 {
   "compilerOptions": {
     "target": "es6",
@@ -8,16 +9,14 @@
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
+    "allowImportingTsExtensions": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true
-  },
-  "exclude": [
-    "node_modules"
-  ]
+  }
 }

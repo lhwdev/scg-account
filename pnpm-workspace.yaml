@@ -2,3 +2,4 @@ packages:
   - packages/frontend/app
   - packages/frontend/theme
   - packages/backend
+  - config
