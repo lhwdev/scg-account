@@ -1,0 +1,7 @@
+{
+  "name": "@scg-utils/serialization",
+  "version": "0.0.1",
+  "dependencies": {
+    "@deepkit/type": "1.0.1-alpha.96"
+  }
+}

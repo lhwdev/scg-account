@@ -1,6 +1,2 @@
 packages:
-  - packages/common
-  - packages/frontend
-  - packages/backend
-  - packages/utils/api/api
-  - packages/utils/api/api-builder
+  - packages/api

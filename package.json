@@ -1,14 +1,7 @@
 {
-  "name": "scg-account",
+  "name": "scg-utils",
   "version": "1.0.0",
-  "description": "개쩌는 SSO 구현 전용 SCG 맞춤 OpenID Connect 구현체?",
   "private": true,
-  "keywords": [
-    "auth",
-    "oauth",
-    "openid-connect",
-    "security"
-  ],
   "author": "lhwdev",
   "license": "UNLICENSED",
   "scripts": {
