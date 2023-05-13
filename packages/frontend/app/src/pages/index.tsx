@@ -2,10 +2,19 @@ import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
+import { css } from "@emotion/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  const a = css`
+    font-size: 3em;
+    height: 3px;
+    &.hi {
+      height: 4px;
+    }
+  `
+  console.log(a);
   return (
     <>
       <Head>
@@ -15,6 +24,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
+        <div className="ho" css={a}></div>
         <div className={styles.description}>
           <p>
             Get started by editing&nbsp;

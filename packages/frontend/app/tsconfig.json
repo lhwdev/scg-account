@@ -1,17 +1,20 @@
 // Final frontend app only tsconfig
 {
-  "extends": "../../../config/tsconfig-base.json",
+  "extends": "@scg-account/config/tsconfig-frontend.json",
   "compilerOptions": {
     "target": "es5",
     "paths": {
       "@/*": [
         "./src/*"
       ]
-    },
+    }
   },
   "include": [
     "next-env.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx"
   ],
+  "exclude": [
+    "node_modules"
+  ]
 }
